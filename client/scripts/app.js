@@ -3,7 +3,7 @@ var app = {
 
   //TODO: The current 'handleUsernameClick' function just toggles the class 'friend'
   //to all messages sent by the user
-  server: 'http://127.0.0.1:3000/',
+  server: 'http://127.0.0.1:3000/classes/messages',
   username: 'anonymous',
   roomname: 'lobby',
   lastMessageId: 0,
@@ -63,7 +63,7 @@ var app = {
       type: 'GET',
       data: { order: '-createdAt' },
       success: function(data) {
-        console.log(data);
+        console.log(data.results);
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) { return; }
 
@@ -76,6 +76,7 @@ var app = {
         // Only bother updating the DOM if we have a new message
         if (mostRecentMessage.objectId !== app.lastMessageId) {
           // Update the UI with the fetched rooms
+    
           app.renderRoomList(data.results);
 
           // Update the UI with the fetched messages

@@ -25,7 +25,8 @@ var data = {
     //   text: 'hi frank',
     //   roomname: 'the interwebs',
     //   createdAt: '2018-07-02T18:32:45.273Z',
-    //   updatedAt: '2018-07-02T18:32:45.273Z'
+    //   updatedAt: '2018-07-02T18:32:45.273Z',
+    //   objectId: 1,
     // },
     // {
     //   username: 'frank',
@@ -67,50 +68,52 @@ var requestHandler = function(request, response) {
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = 'application/JSON';
+  headers['Content-Type'] = 'application/json';
 
-  console.log('Serving request type ' + request.method + ' for url ' + request.url);
-
+  //console.log('Serving request type ' + request.method + ' for url ' + request.url);
+  console.log(request.url.includes('/classes/messages'))
   // The outgoing status.
   // var statusCode = 200;
   // console.log(request , "Request=====================")
-if(request.url.includes('/classes/messages')) {
-  if (request.method === 'GET') {
-    //this.response.end(JSON.parse(data))
-    // data = JSON.parse(data)
-    response.writeHead(200, headers);
-    response.end(JSON.stringify(data));
-  }
-
-  else if (request.method === 'POST') {
-    let msg = '';
-    request.on('data', function (chunk) {
-      msg += chunk;
-    });
-    request.on('end', function() {
-      console.log(msg, 'MESSAGE=================');
-      msg = JSON.parse(msg);
-      data.results.push(msg);
-      console.log(data, 'DATA===============');
-      response.writeHead(201, headers);
+ if(request.url.includes('/classes/messages')) {
+    if (request.method === 'GET') {
+      //this.response.end(JSON.parse(data))
+      // data = JSON.parse(data)
+      response.writeHead(200, headers);
       response.end(JSON.stringify(data));
-    });
- 
-  }
+    }
 
-  else if (request.method === 'OPTIONS') {
-    response.writeHead(200, headers);
-    response.end(JSON.stringify(data));
-  }
-  
+    else if (request.method === 'POST') {
+      let msg = '';
+      request.on('data', function (chunk) {
+        console.log(data, "DATA======")
+        msg += chunk;
+      });
+      request.on('end', function() {
+        console.log(msg, 'MESSAGE=================');
+        msg = JSON.parse(msg);
+        data.results.push(msg);
+        console.log(data, 'DATA===============');
+        response.writeHead(201, headers);
+        response.end(JSON.stringify(data));
+      });
+   
+    }
+
+    else if (request.method === 'OPTIONS') {
+      response.writeHead(200, headers);
+      response.end(JSON.stringify(data));
+    }
+    
+    else {
+      response.writeHead(404, headers);
+      response.end();
+    }
+  } 
   else {
     response.writeHead(404, headers);
     response.end();
   }
-} else {
-  response.writeHead(404, headers);
-  response.end();
-}
 
 
 
@@ -140,4 +143,4 @@ if(request.url.includes('/classes/messages')) {
 
 
 exports.requestHandler = requestHandler;
-exports.defaultCorsHeaders = defaultCorsHeaders;
+//exports.defaultCorsHeaders = defaultCorsHeaders;
