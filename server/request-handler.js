@@ -45,6 +45,7 @@ var data = {
   ]
 };
 var requestHandler = function(request, response) {
+
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -71,46 +72,40 @@ var requestHandler = function(request, response) {
   headers['Content-Type'] = 'application/json';
 
   //console.log('Serving request type ' + request.method + ' for url ' + request.url);
-  console.log(request.url.includes('/classes/messages'))
+  console.log(request.url.includes('/classes/messages'));
   // The outgoing status.
   // var statusCode = 200;
   // console.log(request , "Request=====================")
- if(request.url.includes('/classes/messages')) {
+  if (request.url.includes('/classes/messages')) {
     if (request.method === 'GET') {
       //this.response.end(JSON.parse(data))
       // data = JSON.parse(data)
       response.writeHead(200, headers);
       response.end(JSON.stringify(data));
-    }
-
-    else if (request.method === 'POST') {
+    } else if (request.method === 'POST') {
       let msg = '';
       request.on('data', function (chunk) {
-        console.log(data, "DATA======")
+        console.log(data, 'DATA======');
         msg += chunk;
       });
       request.on('end', function() {
         console.log(msg, 'MESSAGE=================');
         msg = JSON.parse(msg);
+        msg.objectId = data.results.length;
         data.results.push(msg);
         console.log(data, 'DATA===============');
         response.writeHead(201, headers);
         response.end(JSON.stringify(data));
       });
    
-    }
-
-    else if (request.method === 'OPTIONS') {
+    } else if (request.method === 'OPTIONS') {
       response.writeHead(200, headers);
       response.end(JSON.stringify(data));
-    }
-    
-    else {
+    } else {
       response.writeHead(404, headers);
       response.end();
     }
-  } 
-  else {
+  } else {
     response.writeHead(404, headers);
     response.end();
   }
@@ -128,7 +123,7 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  // response.end('Hello, World!');
+  //response.end('Hello, World!');
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
