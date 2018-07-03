@@ -12,30 +12,36 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 //var data = {results: ['{"username":"Jono","text":"Do my bidding!"}']};
+var defaultCorsHeaders = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'access-control-allow-headers': 'content-type, accept',
+  'access-control-max-age': 10 // Seconds.
+};
 var data = {
- results: [
-   // {
-   //   username: 'bob',
-   //   text: 'hi frank',
-   //   roomname: 'the interwebs',
-   //   createdAt: '2018-07-02T18:32:45.273Z',
-   //   updatedAt: '2018-07-02T18:32:45.273Z'
-   // },
-   // {
-   //   username: 'frank',
-   //   text: 'hi bob',
-   //   roomname: 'the interwebs',
-   //   createdAt: '2018-06-02T18:32:45.273Z',
-   //   updatedAt: '2018-06-02T18:32:45.273Z'
-   // },
-   // {
-   //   username: 'joe',
-   //   text: 'hi joe',
-   //   roomname: 'the interwebs',
-   //   createdAt: '2018-05-02T18:32:45.273Z',
-   //   updatedAt: '2018-05-02T18:32:45.273Z'
-   // }
- ]
+  results: [
+    // {
+    //   username: 'bob',
+    //   text: 'hi frank',
+    //   roomname: 'the interwebs',
+    //   createdAt: '2018-07-02T18:32:45.273Z',
+    //   updatedAt: '2018-07-02T18:32:45.273Z'
+    // },
+    // {
+    //   username: 'frank',
+    //   text: 'hi bob',
+    //   roomname: 'the interwebs',
+    //   createdAt: '2018-06-02T18:32:45.273Z',
+    //   updatedAt: '2018-06-02T18:32:45.273Z'
+    // },
+    // {
+    //   username: 'joe',
+    //   text: 'hi joe',
+    //   roomname: 'the interwebs',
+    //   createdAt: '2018-05-02T18:32:45.273Z',
+    //   updatedAt: '2018-05-02T18:32:45.273Z'
+    // }
+  ]
 };
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -66,36 +72,45 @@ var requestHandler = function(request, response) {
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
   // The outgoing status.
-  var statusCode = 200;
+  // var statusCode = 200;
   // console.log(request , "Request=====================")
-
- if (request.method === "GET") {
+if(request.url.includes('/classes/messages')) {
+  if (request.method === 'GET') {
     //this.response.end(JSON.parse(data))
     // data = JSON.parse(data)
-    response.writeHead(statusCode, headers)
+    response.writeHead(200, headers);
     response.end(JSON.stringify(data));
- }
+  }
 
- if (request.method === "POST") {
+  else if (request.method === 'POST') {
     let msg = '';
     request.on('data', function (chunk) {
-      msg += chunk
+      msg += chunk;
     });
-    request.on('end', function(){
-      console.log(msg, 'MESSAGE=================')
+    request.on('end', function() {
+      console.log(msg, 'MESSAGE=================');
       msg = JSON.parse(msg);
-      data.results.push(msg)
-        console.log(data, 'DATA===============')
-        response.writeHead(201, headers)
-        response.end(JSON.stringify(data));
-    })
+      data.results.push(msg);
+      console.log(data, 'DATA===============');
+      response.writeHead(201, headers);
+      response.end(JSON.stringify(data));
+    });
  
- }
+  }
 
- if (request.method === "OPTIONS") {
-    response.writeHead(statusCode, headers)
-    response.end(JSON.stringify(data))
- }
+  else if (request.method === 'OPTIONS') {
+    response.writeHead(200, headers);
+    response.end(JSON.stringify(data));
+  }
+  
+  else {
+    response.writeHead(404, headers);
+    response.end();
+  }
+} else {
+  response.writeHead(404, headers);
+  response.end();
+}
 
 
 
@@ -122,12 +137,6 @@ var requestHandler = function(request, response) {
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
-var defaultCorsHeaders = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept',
-  'access-control-max-age': 10 // Seconds.
-};
 
 
 exports.requestHandler = requestHandler;
