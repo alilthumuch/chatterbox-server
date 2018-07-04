@@ -20,14 +20,14 @@ var defaultCorsHeaders = {
 };
 var data = {
   results: [
-    // {
-    //   username: 'bob',
-    //   text: 'hi frank',
-    //   roomname: 'the interwebs',
-    //   createdAt: '2018-07-02T18:32:45.273Z',
-    //   updatedAt: '2018-07-02T18:32:45.273Z',
-    //   objectId: 1,
-    // },
+    {
+      username: 'bob',
+      text: 'hi frank',
+      roomname: 'the interwebs',
+      createdAt: '2018-07-02T18:32:45.273Z',
+      updatedAt: '2018-07-02T18:32:45.273Z',
+      objectId: 1,
+    },
     // {
     //   username: 'frank',
     //   text: 'hi bob',
@@ -45,7 +45,80 @@ var data = {
   ]
 };
 var requestHandler = function(request, response) {
+  const fs = require('fs');
+  var headers = defaultCorsHeaders;
+  if (request.method === 'GET' && (request.url === '/' || request.url.includes('username'))) {
+    fs.readFile('./client/index.html', 'utf8', (err, data) => {
+      console.log(data, 'DATAAAAAAAAAAAAAAAAAAAAAAA');
 
+      if (err) {
+        return console.log(err);
+      } else {
+        headers['Content-Type'] = 'text/html';
+      
+        response.writeHead(200, headers);
+        response.write(data);
+      }
+      response.end();
+    });
+  }
+
+  if (request.method === 'GET' && (request.url === '/styles/styles.css')) {
+    fs.readFile('./client/styles/styles.css', 'utf8', (err, data) => {
+      console.log(data, 'DATAAAAAAAAAAAAAAAAAAAAAAA');
+      if (err) {
+        return console.log(err);
+      } else {
+        headers['Content-Type'] = 'text/css';
+      
+        response.writeHead(200, headers);
+        response.write(data);
+      }
+      response.end();
+    });
+  }
+
+  if (request.method === 'GET' && (request.url === '/bower_components/jquery/dist/jquery.js')) {
+    fs.readFile('./client/bower_components/jquery/dist/jquery.js', 'utf8', (err, data) => {
+      if (err) {
+        return console.log(err);
+      } else {
+        headers['Content-Type'] = 'application/json';
+      
+        response.writeHead(200, headers);
+        response.write(data);
+      }
+      response.end();
+    });
+  }
+
+  if (request.method === 'GET' && (request.url === '/scripts/app.js')) {
+    fs.readFile('./client/scripts/app.js', 'utf8', (err, data) => {
+      if (err) {
+        return console.log(err);
+      } else {
+        headers['Content-Type'] = 'application/json';
+      
+        response.writeHead(200, headers);
+        response.write(data);
+      }
+      response.end();
+    });
+  }
+
+  if (request.method === 'GET' && (request.url === '/images/spiffygif_46x46.gif')) {
+    fs.readFile('./client/images/spiffygif_46x46.gif', 'utf8', (err, data) => {
+      if (err) {
+        return console.log(err);
+      } else {
+        headers['Content-Type'] = 'image';
+      
+        response.writeHead(200, headers);
+        response.write(data);
+      }
+      response.end();
+    });
+  }
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -63,7 +136,6 @@ var requestHandler = function(request, response) {
  
  
   // See the note below about CORS headers.
-  var headers = defaultCorsHeaders;
 
   // Tell the client we are sending them plain text.
   //
@@ -71,15 +143,13 @@ var requestHandler = function(request, response) {
   // other than plain text, like JSON or HTML.
   headers['Content-Type'] = 'application/json';
 
-  //console.log('Serving request type ' + request.method + ' for url ' + request.url);
-  console.log(request.url.includes('/classes/messages'));
+  console.log('Serving request type ' + request.method + ' for url ' + request.url);
+  //console.log(request.url.includes('/classes/messages'));
   // The outgoing status.
   // var statusCode = 200;
   // console.log(request , "Request=====================")
   if (request.url.includes('/classes/messages')) {
     if (request.method === 'GET') {
-      //this.response.end(JSON.parse(data))
-      // data = JSON.parse(data)
       response.writeHead(200, headers);
       response.end(JSON.stringify(data));
     } else if (request.method === 'POST') {
@@ -89,8 +159,8 @@ var requestHandler = function(request, response) {
         msg += chunk;
       });
       request.on('end', function() {
-        console.log(msg, 'MESSAGE=================');
         msg = JSON.parse(msg);
+        console.log(msg, 'MESSAGE=============');
         msg.objectId = data.results.length;
         data.results.push(msg);
         console.log(data, 'DATA===============');
@@ -105,12 +175,10 @@ var requestHandler = function(request, response) {
       response.writeHead(404, headers);
       response.end();
     }
-  } else {
-    response.writeHead(404, headers);
-    response.end();
-  }
-
-
+  } //else {
+  //   response.writeHead(404, headers);
+  //   response.end();
+  // }
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
